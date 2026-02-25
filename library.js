@@ -14,6 +14,10 @@ Book.prototype.info = function () {
   return `${this.title} by ${this.author}, ${this.numberOfPages} pages, ${this.read}, id: ${this.id}`;
 };
 
+Book.prototype.toggleRead = function () {
+  this.read = this.read === "read" ? "not read" : "read";
+}
+
 addBookToLibrary = function (title, author, numberOfPages, read) {
   const book = new Book(title, author, numberOfPages, read);
 
@@ -32,7 +36,7 @@ addBookToLibrary(
   "not read"
 );
 
-console.log(myLibrary);
+// console.log(myLibrary);
 
 const displayBookButton = document.createElement("button");
 displayBookButton.textContent = "Display Library";
@@ -57,17 +61,28 @@ displayBookButton.addEventListener("click", function () {
     bookElement.appendChild(removeBook);
 
     removeBook.addEventListener("click", function () {
-      const bookId = document.querySelector("[data-id='" + book.id + "']");
-      console.log(bookId);
-      console.log(myLibrary);
-      const bookIndex = myLibrary.findIndex((b) => b.id === bookId);
+      const bookIndex = myLibrary.findIndex((b) => b.id === book.id);
+      console.log(bookIndex);
       if (bookIndex !== -1) {
         myLibrary.splice(bookIndex, 1);
         bookElement.remove();
       }
+      console.log(myLibrary);
     });
-    
+
+    const toggleReadButton = document.createElement("button");
+    toggleReadButton.textContent = "Toggle Read Status";
+    bookElement.appendChild(toggleReadButton);
+
+    toggleReadButton.addEventListener("click", function () {
+      book.toggleRead();
+      bookElement.textContent = book.info();
+      bookElement.appendChild(removeBook);
+      bookElement.appendChild(toggleReadButton);
+    });
   });
+
+    
 });
 
 newBookButton.addEventListener("click", function () {
@@ -101,8 +116,6 @@ newBookButton.addEventListener("click", function () {
   const submitButton = document.createElement("button");
   submitButton.textContent = "Add Book";
   bookForm.appendChild(submitButton);
-
-  
 
   bookDialog.appendChild(bookForm);
   document.body.appendChild(bookDialog);
