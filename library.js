@@ -89,18 +89,24 @@ newBookButton.addEventListener("click", function () {
   const bookDialog = document.createElement("dialog");
 
   const bookForm = document.createElement("form");
+  bookForm.noValidate = true;
 
   const titleInput = document.createElement("input");
   titleInput.placeholder = "Title";
   bookForm.appendChild(titleInput);
+  titleInput.required = true;
 
   const authorInput = document.createElement("input");
   authorInput.placeholder = "Author";
   bookForm.appendChild(authorInput);
+  authorInput.required = true;
 
   const pagesInput = document.createElement("input");
   pagesInput.placeholder = "Number of Pages";
   bookForm.appendChild(pagesInput);
+  pagesInput.required = true;
+  pagesInput.type = "number";
+  pagesInput.min = 1;
 
   const readInput = document.createElement("select");
   const option1 = document.createElement("option");
@@ -123,6 +129,42 @@ newBookButton.addEventListener("click", function () {
 
   bookForm.addEventListener("submit", function (e) {
     e.preventDefault();
+
+    if (!bookForm.checkValidity()) {
+      bookForm.reportValidity();
+      return;
+    }
+
+    titleInput.setCustomValidity("");
+    authorInput.setCustomValidity("");
+    pagesInput.setCustomValidity("");
+
+    titleInput.addEventListener("invalid", () => {
+      if (titleInput.value.trim() === ""){
+        titleInput.setCustomValidity("Enter a book title");
+      }
+    });
+
+    authorInput.addEventListener("invalid", ()=>{
+       if (authorInput.value.trim() === "") {
+         authorInput.setCustomValidity("Enter the author's name");
+       }
+    });
+
+    pagesInput.addEventListener("invalid", () =>{
+      if (pagesInput.value.trim() === ""){
+        pagesInput.setCustomValidity("Enter number of pages");
+      } else if (pagesInput.value < 1) {
+        pagesInput.setCustomValidity("Pages must be at least 1");
+      }
+    });
+
+    [titleInput, authorInput, pagesInput].forEach(input => {
+      input.addEventListener("input", () => {
+        input.setCustomValidity("");
+      });
+    });
+
     addBookToLibrary(
       titleInput.value,
       authorInput.value,
